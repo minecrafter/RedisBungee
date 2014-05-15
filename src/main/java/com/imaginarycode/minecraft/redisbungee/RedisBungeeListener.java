@@ -65,7 +65,7 @@ public class RedisBungeeListener implements Listener {
     public void onPing(ProxyPingEvent event) {
         ServerPing old = event.getResponse();
         ServerPing reply = new ServerPing();
-        if (RedisBungee.getConfiguration().getBoolean("player-list-in-ping", false)) {
+        if (RedisBungee.getConfiguration().getBoolean("player-list-in-ping", true)) {
             Set<UUID> players = plugin.getPlayers();
             ServerPing.PlayerInfo[] info = new ServerPing.PlayerInfo[players.size()];
             int idx = 0;
