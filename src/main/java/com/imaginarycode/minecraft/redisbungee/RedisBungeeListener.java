@@ -60,13 +60,7 @@ public class RedisBungeeListener implements Listener {
 
     @EventHandler(priority = EventPriority.LOWEST)
     public void onPing(ProxyPingEvent event) {
-        ServerPing old = event.getResponse();
-        ServerPing reply = new ServerPing();
-        reply.setPlayers(new ServerPing.Players(old.getPlayers().getMax(), plugin.getCount(), old.getPlayers().getSample()));
-        reply.setDescription(old.getDescription());
-        reply.setFavicon(old.getFaviconObject());
-        reply.setVersion(old.getVersion());
-        event.setResponse(reply);
+        event.getResponse().getPlayers().setOnline(plugin.getCount());
     }
 
     @EventHandler
