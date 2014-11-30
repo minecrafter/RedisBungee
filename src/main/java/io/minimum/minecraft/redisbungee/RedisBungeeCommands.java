@@ -126,7 +126,7 @@ class RedisBungeeCommands
                             sender.sendMessage(PLAYER_NOT_FOUND);
                             return;
                         }
-                        String si = plugin.getDataManager().getServer(uuid);
+                        String si = RedisBungee.getApi().getPlayer(uuid).getServer();
                         if (si != null)
                         {
                             TextComponent message = new TextComponent();
@@ -172,7 +172,7 @@ class RedisBungeeCommands
                             sender.sendMessage(PLAYER_NOT_FOUND);
                             return;
                         }
-                        long secs = plugin.getDataManager().getLastOnline(uuid);
+                        long secs = RedisBungee.getApi().getPlayer(uuid).getLastOnline();
                         TextComponent message = new TextComponent();
                         if (secs == 0)
                         {
@@ -223,7 +223,7 @@ class RedisBungeeCommands
                             sender.sendMessage(PLAYER_NOT_FOUND);
                             return;
                         }
-                        InetAddress ia = plugin.getDataManager().getIp(uuid);
+                        InetAddress ia = RedisBungee.getApi().getPlayer(uuid).getAddress();
                         if (ia != null)
                         {
                             TextComponent message = new TextComponent();
@@ -269,7 +269,7 @@ class RedisBungeeCommands
                             sender.sendMessage(PLAYER_NOT_FOUND);
                             return;
                         }
-                        String proxy = plugin.getDataManager().getProxy(uuid);
+                        String proxy = RedisBungee.getApi().getPlayer(uuid).getProxy();
                         if (proxy != null)
                         {
                             TextComponent message = new TextComponent();

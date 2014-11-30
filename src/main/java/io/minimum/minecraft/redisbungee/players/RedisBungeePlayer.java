@@ -1,7 +1,6 @@
 package io.minimum.minecraft.redisbungee.players;
 
 import java.net.InetAddress;
-import java.util.Calendar;
 import java.util.UUID;
 
 /**
@@ -38,11 +37,11 @@ public interface RedisBungeePlayer
     String getProxy();
 
     /**
-     * Fetches when this player was last on. If they are currently online, this will return null.
+     * Fetches when this player was last on. If they are currently online, this will return 0.
      *
-     * @return the last time the player was on, null if they are online
+     * @return the last time the player was on, 0 if they are online
      */
-    Calendar getLastOnline();
+    long getLastOnline();
 
     /**
      * Fetches the IP this player has connected from.
