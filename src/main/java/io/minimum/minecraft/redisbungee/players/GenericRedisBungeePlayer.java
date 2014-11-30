@@ -42,18 +42,9 @@ public final class GenericRedisBungeePlayer implements RedisBungeePlayer
     }
 
     @Override
-    public Calendar getLastOnline()
+    public long getLastOnline()
     {
-        long value = plugin.getDataManager().getLastOnline(uuid);
-
-        if (value <= 0)
-        {
-            return null;
-        }
-
-        Calendar calendar = Calendar.getInstance();
-        calendar.setTimeInMillis(value);
-        return calendar;
+        return plugin.getDataManager().getLastOnline(uuid);
     }
 
     @Override

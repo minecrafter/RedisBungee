@@ -5,6 +5,8 @@ import java.util.UUID;
 
 /**
  * This interface defines a player connected to the network.
+ *
+ * @since 0.4
  */
 public interface RedisBungeePlayer
 {

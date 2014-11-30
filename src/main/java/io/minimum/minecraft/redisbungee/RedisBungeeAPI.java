@@ -53,10 +53,9 @@ public class RedisBungeeAPI
 
     /**
      * Get a combined list of players on this network.
-     * <p>
-     * <strong>Note that this function returns an instance of {@link com.google.common.collect.ImmutableSet}.</strong>
      *
      * @return a Set with all players found
+     * @since 0.4
      */
     public final Collection<RedisBungeePlayer> getOnlinePlayers()
     {
@@ -96,6 +95,7 @@ public class RedisBungeeAPI
      * Get a specified player on this network.
      *
      * @return a {@link io.minimum.minecraft.redisbungee.players.RedisBungeePlayer} that may or may not be online
+     * @since 0.4
      */
     public final RedisBungeePlayer getPlayer(UUID uuid)
     {
