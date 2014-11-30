@@ -470,10 +470,10 @@ public final class RedisBungee extends Plugin
                         Long value = Long.valueOf(rsc.hget("heartbeats", serverId));
                         if (value != null && System.currentTimeMillis() < value + 20000)
                         {
-                            getLogger().severe("You have launched a possible imposter BungeeCord instance. Another instance is already running.");
+                            getLogger().severe("You have launched a possible impostor BungeeCord instance. Another instance is already running.");
                             getLogger().severe("For data consistency reasons, RedisBungee will now disable itself.");
                             getLogger().severe("If this instance is coming up from a crash, create a file in your RedisBungee plugins directory with the name 'restarted_from_crash.txt' and RedisBungee will not perform this check.");
-                            throw new RuntimeException("Possible imposter instance!");
+                            throw new RuntimeException("Possible impostor instance!");
                         }
                     }
                     catch (NumberFormatException ignored)
