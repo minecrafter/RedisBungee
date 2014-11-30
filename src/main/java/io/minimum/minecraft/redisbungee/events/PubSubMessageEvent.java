@@ -4,7 +4,7 @@
  * terms of the Do What The Fuck You Want To Public License, Version 2,
  * as published by Sam Hocevar. See http://www.wtfpl.net/ for more details.
  */
-package com.imaginarycode.minecraft.redisbungee.events;
+package io.minimum.minecraft.redisbungee.events;
 
 import lombok.RequiredArgsConstructor;
 import lombok.ToString;
@@ -19,15 +19,18 @@ import net.md_5.bungee.api.plugin.Event;
  */
 @RequiredArgsConstructor
 @ToString
-public class PubSubMessageEvent extends Event {
+public class PubSubMessageEvent extends Event
+{
     private final String channel;
     private final String message;
 
-    public String getChannel() {
+    public String getChannel()
+    {
         return channel;
     }
 
-    public String getMessage() {
+    public String getMessage()
+    {
         return message;
     }
 }

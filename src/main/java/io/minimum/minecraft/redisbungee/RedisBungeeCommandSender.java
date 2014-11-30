@@ -4,7 +4,7 @@
  * terms of the Do What The Fuck You Want To Public License, Version 2,
  * as published by Sam Hocevar. See http://www.wtfpl.net/ for more details.
  */
-package com.imaginarycode.minecraft.redisbungee;
+package io.minimum.minecraft.redisbungee;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
@@ -23,61 +23,73 @@ import java.util.Collections;
  * @since 0.2.3
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public class RedisBungeeCommandSender implements CommandSender {
+public class RedisBungeeCommandSender implements CommandSender
+{
     static final RedisBungeeCommandSender instance = new RedisBungeeCommandSender();
 
     @Override
-    public String getName() {
+    public String getName()
+    {
         return "RedisBungee";
     }
 
     @Override
-    public void sendMessage(String s) {
+    public void sendMessage(String s)
+    {
         // no-op
     }
 
     @Override
-    public void sendMessages(String... strings) {
+    public void sendMessages(String... strings)
+    {
         // no-op
     }
 
     @Override
-    public void sendMessage(BaseComponent... baseComponents) {
+    public void sendMessage(BaseComponent... baseComponents)
+    {
         // no-op
     }
 
     @Override
-    public void sendMessage(BaseComponent baseComponent) {
+    public void sendMessage(BaseComponent baseComponent)
+    {
         // no-op
     }
 
     @Override
-    public Collection<String> getGroups() {
+    public Collection<String> getGroups()
+    {
         return Collections.emptySet();
     }
 
     @Override
-    public void addGroups(String... strings) {
+    public void addGroups(String... strings)
+    {
         // no-op
     }
 
     @Override
-    public void removeGroups(String... strings) {
+    public void removeGroups(String... strings)
+    {
         // no-op
     }
 
     @Override
-    public boolean hasPermission(String s) {
+    public boolean hasPermission(String s)
+    {
         return true;
     }
 
     @Override
-    public void setPermission(String s, boolean b) {
+    public void setPermission(String s, boolean b)
+    {
         // no-op
     }
 
     @Override
-    public Collection<String> getPermissions() {
+    public Collection<String> getPermissions()
+    {
         return Collections.emptySet();
     }
 }

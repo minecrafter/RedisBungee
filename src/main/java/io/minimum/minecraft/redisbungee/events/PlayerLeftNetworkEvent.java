@@ -4,7 +4,7 @@
  * terms of the Do What The Fuck You Want To Public License, Version 2,
  * as published by Sam Hocevar. See http://www.wtfpl.net/ for more details.
  */
-package com.imaginarycode.minecraft.redisbungee.events;
+package io.minimum.minecraft.redisbungee.events;
 
 import lombok.ToString;
 import net.md_5.bungee.api.plugin.Event;
@@ -12,23 +12,26 @@ import net.md_5.bungee.api.plugin.Event;
 import java.util.UUID;
 
 /**
- * This event is sent when a player joins the network. RedisBungee sends the event only when
+ * This event is sent when a player disconnects. RedisBungee sends the event only when
  * the proxy the player has been connected to is different than the local proxy.
  * <p>
- * This event corresponds to {@link net.md_5.bungee.api.event.PostLoginEvent}, and is fired
+ * This event corresponds to {@link net.md_5.bungee.api.event.PlayerDisconnectEvent}, and is fired
  * asynchronously.
  *
  * @since 0.3.4
  */
 @ToString
-public class PlayerJoinedNetworkEvent extends Event {
+public class PlayerLeftNetworkEvent extends Event
+{
     private final UUID uuid;
 
-    public PlayerJoinedNetworkEvent(UUID uuid) {
+    public PlayerLeftNetworkEvent(UUID uuid)
+    {
         this.uuid = uuid;
     }
 
-    public UUID getUuid() {
+    public UUID getUuid()
+    {
         return uuid;
     }
 }

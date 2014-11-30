@@ -4,7 +4,7 @@
  * terms of the Do What The Fuck You Want To Public License, Version 2,
  * as published by Sam Hocevar. See http://www.wtfpl.net/ for more details.
  */
-package com.imaginarycode.minecraft.redisbungee;
+package io.minimum.minecraft.redisbungee;
 
 import com.google.common.base.Function;
 import com.google.common.base.Preconditions;
@@ -12,14 +12,13 @@ import com.google.common.collect.Collections2;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Multimap;
+import io.minimum.minecraft.redisbungee.players.GenericRedisBungeePlayer;
+import io.minimum.minecraft.redisbungee.players.RedisBungeePlayer;
 import lombok.NonNull;
 import net.md_5.bungee.api.config.ServerInfo;
 
 import java.net.InetAddress;
-import java.util.Collection;
-import java.util.List;
-import java.util.Set;
-import java.util.UUID;
+import java.util.*;
 
 /**
  * This class exposes some internal RedisBungee functions. You obtain an instance of this object by invoking {@link RedisBungee#getApi()}.
@@ -27,11 +26,13 @@ import java.util.UUID;
  * @author tuxed
  * @since 0.2.3
  */
-public class RedisBungeeAPI {
+public class RedisBungeeAPI
+{
     private final RedisBungee plugin;
     private final List<String> reservedChannels;
 
-    RedisBungeeAPI(RedisBungee plugin) {
+    RedisBungeeAPI(RedisBungee plugin)
+    {
         this.plugin = plugin;
         this.reservedChannels = ImmutableList.of(
                 "redisbungee-allservers",
@@ -45,31 +46,9 @@ public class RedisBungeeAPI {
      *
      * @return a count of all players found
      */
-    public final int getPlayerCount() {
+    public final int getPlayerCount()
+    {
         return plugin.getCount();
-    }
-
-    /**
-     * Get the last time a player was on. If the player is currently online, this will return 0. If the player has not been recorded,
-     * this will return -1. Otherwise it will return a value in milliseconds.
-     *
-     * @param player a player name
-     * @return the last time a player was on, if online returns a 0
-     */
-    public final long getLastOnline(@NonNull UUID player) {
-        return plugin.getDataManager().getLastOnline(player);
-    }
-
-    /**
-     * Get the server where the specified player is playing. This function also deals with the case of local players
-     * as well, and will return local information on them.
-     *
-     * @param player a player name
-     * @return a {@link net.md_5.bungee.api.config.ServerInfo} for the server the player is on.
-     */
-    public final ServerInfo getServerFor(@NonNull UUID player) {
-        String server = plugin.getDataManager().getServer(player);
-        return plugin.getProxy().getServerInfo(server);
     }
 
     /**
@@ -79,8 +58,16 @@ public class RedisBungeeAPI {
      *
      * @return a Set with all players found
      */
-    public final Set<UUID> getPlayersOnline() {
-        return plugin.getPlayers();
+    public final Collection<RedisBungeePlayer> getOnlinePlayers()
+    {
+        return Collections2.transform(((ImmutableSet<UUID>) plugin.getPlayers()).asList(), new Function<UUID, RedisBungeePlayer>()
+        {
+            @Override
+            public RedisBungeePlayer apply(UUID uuid)
+            {
+                return new GenericRedisBungeePlayer(uuid, plugin);
+            }
+        });
     }
 
     /**
@@ -93,65 +80,26 @@ public class RedisBungeeAPI {
      * @see #getNameFromUuid(java.util.UUID)
      * @since 0.3
      */
-    public final Collection<String> getHumanPlayersOnline() {
-        return Collections2.transform(((ImmutableSet<UUID>) getPlayersOnline()).asList(), new Function<UUID, String>() {
+    public final Collection<String> getHumanPlayersOnline()
+    {
+        return Collections2.transform(((ImmutableSet<UUID>) plugin.getPlayers()).asList(), new Function<UUID, String>()
+        {
             @Override
-            public String apply(UUID uuid) {
+            public String apply(UUID uuid)
+            {
                 return getNameFromUuid(uuid, false);
             }
         });
     }
 
     /**
-     * Get a full list of players on all servers.
+     * Get a specified player on this network.
      *
-     * @return a immutable Multimap with all players found on this server
-     * @since 0.2.5
+     * @return a {@link io.minimum.minecraft.redisbungee.players.RedisBungeePlayer} that may or may not be online
      */
-    public final Multimap<String, UUID> getServerToPlayers() {
-        return plugin.serversToPlayers();
-    }
-
-    /**
-     * Get a list of players on the server with the given name.
-     *
-     * @param server a server name
-     * @return a Set with all players found on this server
-     */
-    public final Set<UUID> getPlayersOnServer(@NonNull String server) {
-        return plugin.getPlayersOnServer(server);
-    }
-
-    /**
-     * Convenience method: Checks if the specified player is online.
-     *
-     * @param player a player name
-     * @return if the player is online
-     */
-    public final boolean isPlayerOnline(@NonNull UUID player) {
-        return getLastOnline(player) == 0;
-    }
-
-    /**
-     * Get the {@link java.net.InetAddress} associated with this player.
-     *
-     * @param player the player to fetch the IP for
-     * @return an {@link java.net.InetAddress} if the player is online, null otherwise
-     * @since 0.2.4
-     */
-    public final InetAddress getPlayerIp(@NonNull UUID player) {
-        return plugin.getDataManager().getIp(player);
-    }
-
-    /**
-     * Get the RedisBungee proxy ID this player is connected to.
-     *
-     * @param player the player to fetch the IP for
-     * @return the proxy the player is connected to, or null if they are offline
-     * @since 0.3.3
-     */
-    public final String getProxy(@NonNull UUID player) {
-        return plugin.getDataManager().getProxy(player);
+    public final RedisBungeePlayer getPlayer(UUID uuid)
+    {
+        return new GenericRedisBungeePlayer(uuid, plugin);
     }
 
     /**
@@ -161,7 +109,8 @@ public class RedisBungeeAPI {
      * @see #sendProxyCommand(String, String)
      * @since 0.2.5
      */
-    public final void sendProxyCommand(@NonNull String command) {
+    public final void sendProxyCommand(@NonNull String command)
+    {
         plugin.sendProxyCommand("allservers", command);
     }
 
@@ -174,18 +123,20 @@ public class RedisBungeeAPI {
      * @see #getAllServers()
      * @since 0.2.5
      */
-    public final void sendProxyCommand(@NonNull String proxyId, @NonNull String command) {
+    public final void sendProxyCommand(@NonNull String proxyId, @NonNull String command)
+    {
         plugin.sendProxyCommand(proxyId, command);
     }
 
     /**
-     * Sends a message to a PubSub channel. The channel has to be subscribed to on this, or another redisbungee instance for {@link com.imaginarycode.minecraft.redisbungee.events.PubSubMessageEvent} to fire.
+     * Sends a message to a PubSub channel. The channel has to be subscribed to on this, or another redisbungee instance for {@link io.minimum.minecraft.redisbungee.events.PubSubMessageEvent} to fire.
      *
      * @param channel The PubSub channel
      * @param message the message body to send
      * @since 0.3.3
      */
-    public final void sendChannelMessage(@NonNull String channel, @NonNull String message) {
+    public final void sendChannelMessage(@NonNull String channel, @NonNull String message)
+    {
         plugin.sendChannelMessage(channel, message);
     }
 
@@ -196,7 +147,8 @@ public class RedisBungeeAPI {
      * @see #getAllServers()
      * @since 0.2.5
      */
-    public final String getServerId() {
+    public final String getServerId()
+    {
         return plugin.getServerId();
     }
 
@@ -207,17 +159,19 @@ public class RedisBungeeAPI {
      * @see #getServerId()
      * @since 0.2.5
      */
-    public final List<String> getAllServers() {
+    public final List<String> getAllServers()
+    {
         return plugin.getServerIds();
     }
 
     /**
-     * Register (a) PubSub channel(s), so that you may handle {@link com.imaginarycode.minecraft.redisbungee.events.PubSubMessageEvent} for it.
+     * Register (a) PubSub channel(s), so that you may handle {@link io.minimum.minecraft.redisbungee.events.PubSubMessageEvent} for it.
      *
      * @param channels the channels to register
      * @since 0.3
      */
-    public final void registerPubSubChannels(String... channels) {
+    public final void registerPubSubChannels(String... channels)
+    {
         RedisBungee.getPubSubListener().addChannel(channels);
     }
 
@@ -227,8 +181,10 @@ public class RedisBungeeAPI {
      * @param channels the channels to unregister
      * @since 0.3
      */
-    public final void unregisterPubSubChannels(String... channels) {
-        for (String channel : channels) {
+    public final void unregisterPubSubChannels(String... channels)
+    {
+        for (String channel : channels)
+        {
             Preconditions.checkArgument(!reservedChannels.contains(channel), "attempting to unregister internal channel");
         }
 
@@ -248,7 +204,8 @@ public class RedisBungeeAPI {
      * @return the name for the UUID
      * @since 0.3
      */
-    public final String getNameFromUuid(@NonNull UUID uuid) {
+    public final String getNameFromUuid(@NonNull UUID uuid)
+    {
         return getNameFromUuid(uuid, true);
     }
 
@@ -266,7 +223,8 @@ public class RedisBungeeAPI {
      * @return the name for the UUID
      * @since 0.3.2
      */
-    public final String getNameFromUuid(@NonNull UUID uuid, boolean expensiveLookups) {
+    public final String getNameFromUuid(@NonNull UUID uuid, boolean expensiveLookups)
+    {
         return plugin.getUuidTranslator().getNameFromUuid(uuid, expensiveLookups);
     }
 
@@ -284,7 +242,8 @@ public class RedisBungeeAPI {
      * @return the UUID for the name
      * @since 0.3
      */
-    public final UUID getUuidFromName(@NonNull String name) {
+    public final UUID getUuidFromName(@NonNull String name)
+    {
         return getUuidFromName(name, true);
     }
 
@@ -300,7 +259,8 @@ public class RedisBungeeAPI {
      * @return the UUID for the name
      * @since 0.3.2
      */
-    public final UUID getUuidFromName(@NonNull String name, boolean expensiveLookups) {
+    public final UUID getUuidFromName(@NonNull String name, boolean expensiveLookups)
+    {
         return plugin.getUuidTranslator().getTranslatedUuid(name, expensiveLookups);
     }
 }
