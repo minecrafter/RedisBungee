@@ -90,7 +90,7 @@ public class RedisBungeeListener implements Listener {
                 jedis.hset("player:" + event.getPlayer().getUniqueId().toString(), "server", event.getServer().getInfo().getName());
                 jedis.publish("redisbungee-data", RedisBungee.getGson().toJson(new DataManager.DataManagerMessage<>(
                         event.getPlayer().getUniqueId(), DataManager.DataManagerMessage.Action.SERVER_CHANGE,
-                        new DataManager.ServerChangePayload(event.getServer().getInfo().getName()))));
+                        new DataManager.ServerChangePayload(event.getPlayer().getServer().getInfo().getName(), event.getServer().getInfo().getName()))));
                 return null;
             }
         });

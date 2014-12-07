@@ -269,7 +269,7 @@ public class DataManager implements Listener {
                 plugin.getProxy().getScheduler().runAsync(plugin, new Runnable() {
                     @Override
                     public void run() {
-                        plugin.getProxy().getPluginManager().callEvent(new PlayerChangedServerNetworkEvent(message3.getTarget(), message3.getPayload().getServer()));
+                        plugin.getProxy().getPluginManager().callEvent(new PlayerChangedServerNetworkEvent(message3.getTarget(), message3.getPayload().getFormerServer(), message3.getPayload().getServer()));
                     }
                 });
                 break;
@@ -283,6 +283,7 @@ public class DataManager implements Listener {
         private final String source = RedisBungee.getApi().getServerId();
         private final Action action; // for future use!
         private final T payload;
+
         enum Action {
             JOIN,
             LEAVE,
@@ -299,6 +300,7 @@ public class DataManager implements Listener {
     @Getter
     @RequiredArgsConstructor
     static class ServerChangePayload {
+        private final String formerServer;
         private final String server;
     }
 
