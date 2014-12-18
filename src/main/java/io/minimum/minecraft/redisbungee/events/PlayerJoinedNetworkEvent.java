@@ -6,7 +6,9 @@
  */
 package io.minimum.minecraft.redisbungee.events;
 
-import lombok.ToString;
+import io.minimum.minecraft.redisbungee.players.RedisBungeePlayer;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
 import net.md_5.bungee.api.plugin.Event;
 
 import java.util.UUID;
@@ -20,18 +22,9 @@ import java.util.UUID;
  *
  * @since 0.3.4
  */
-@ToString
+@EqualsAndHashCode(callSuper = false)
+@Data
 public class PlayerJoinedNetworkEvent extends Event
 {
-    private final UUID uuid;
-
-    public PlayerJoinedNetworkEvent(UUID uuid)
-    {
-        this.uuid = uuid;
-    }
-
-    public UUID getUuid()
-    {
-        return uuid;
-    }
+    private final RedisBungeePlayer player;
 }

@@ -4,9 +4,8 @@
  * terms of the Do What The Fuck You Want To Public License, Version 2,
  * as published by Sam Hocevar. See http://www.wtfpl.net/ for more details.
  */
-package io.minimum.minecraft.redisbungee.events;
+package com.imaginarycode.minecraft.redisbungee.events;
 
-import io.minimum.minecraft.redisbungee.players.RedisBungeePlayer;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import net.md_5.bungee.api.plugin.Event;
@@ -21,10 +20,12 @@ import java.util.UUID;
  * asynchronously.
  *
  * @since 0.3.4
+ * @deprecated use {@link io.minimum.minecraft.redisbungee.events.PlayerLeftNetworkEvent}
  */
 @EqualsAndHashCode(callSuper = false)
 @Data
+@Deprecated
 public class PlayerLeftNetworkEvent extends Event
 {
-    private final RedisBungeePlayer player;
+    private final UUID uuid;
 }

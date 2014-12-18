@@ -15,7 +15,6 @@ import io.minimum.minecraft.redisbungee.events.PlayerJoinedNetworkEvent;
 import io.minimum.minecraft.redisbungee.events.PlayerLeftNetworkEvent;
 import io.minimum.minecraft.redisbungee.events.PubSubMessageEvent;
 import io.minimum.minecraft.redisbungee.players.GenericRedisBungeePlayer;
-import io.minimum.minecraft.redisbungee.players.RedisBungeePlayer;
 import io.minimum.minecraft.redisbungee.util.RedisCallable;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -25,14 +24,11 @@ import net.md_5.bungee.api.event.PostLoginEvent;
 import net.md_5.bungee.api.plugin.Listener;
 import net.md_5.bungee.event.EventHandler;
 import redis.clients.jedis.Jedis;
-import redis.clients.jedis.exceptions.JedisConnectionException;
 
 import java.net.InetAddress;
-import java.net.UnknownHostException;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
-import java.util.logging.Level;
 
 /**
  * This class manages all the data that RedisBungee fetches from Redis, along with updates to that data.
@@ -208,7 +204,7 @@ public class DataManager implements Listener
                     @Override
                     public void run()
                     {
-                        plugin.getProxy().getPluginManager().callEvent(new PlayerJoinedNetworkEvent(message1.getTarget()));
+                        plugin.getProxy().getPluginManager().callEvent(new PlayerJoinedNetworkEvent(new GenericRedisBungeePlayer(message1.getTarget(), plugin)));
                     }
                 });
                 break;
@@ -223,7 +219,7 @@ public class DataManager implements Listener
                     @Override
                     public void run()
                     {
-                        plugin.getProxy().getPluginManager().callEvent(new PlayerLeftNetworkEvent(message2.getTarget()));
+                        plugin.getProxy().getPluginManager().callEvent(new PlayerLeftNetworkEvent(new GenericRedisBungeePlayer(message2.getTarget(), plugin)));
                     }
                 });
                 break;
@@ -231,13 +227,13 @@ public class DataManager implements Listener
                 final DataManagerMessage<ServerChangePayload> message3 = RedisBungee.getGson().fromJson(jsonObject, new TypeToken<DataManagerMessage<ServerChangePayload>>()
                 {
                 }.getType());
-                serverCache.put(message3.getTarget(), message3.getPayload().getServer());
+                final String oldServer = serverCache.put(message3.getTarget(), message3.getPayload().getServer());
                 plugin.getProxy().getScheduler().runAsync(plugin, new Runnable()
                 {
                     @Override
                     public void run()
                     {
-                        plugin.getProxy().getPluginManager().callEvent(new PlayerChangedServerNetworkEvent(message3.getTarget(), message3.getPayload().getServer()));
+                        plugin.getProxy().getPluginManager().callEvent(new PlayerChangedServerNetworkEvent(new GenericRedisBungeePlayer(message3.getTarget(), plugin), oldServer, message3.getPayload().getServer()));
                     }
                 });
                 break;

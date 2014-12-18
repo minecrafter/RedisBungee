@@ -7,6 +7,7 @@
 package io.minimum.minecraft.redisbungee.util;
 
 import com.google.common.base.Charsets;
+import com.google.common.collect.ImmutableList;
 import io.minimum.minecraft.redisbungee.RedisBungee;
 import lombok.Getter;
 import lombok.NonNull;
@@ -16,7 +17,6 @@ import redis.clients.jedis.Jedis;
 import redis.clients.jedis.exceptions.JedisException;
 
 import java.util.Calendar;
-import java.util.Collections;
 import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
@@ -112,7 +112,7 @@ public final class UUIDTranslator
             Map<String, UUID> uuidMap1;
             try
             {
-                uuidMap1 = new UUIDFetcher(Collections.singletonList(player)).call();
+                uuidMap1 = new UUIDFetcher(ImmutableList.of(player)).call();
             }
             catch (Exception e)
             {
@@ -186,7 +186,7 @@ public final class UUIDTranslator
             String name;
             try
             {
-                name = new NameFetcher(Collections.singletonList(player)).call().get(player);
+                name = new NameFetcher(ImmutableList.of(player)).call().get(player);
             }
             catch (Exception e)
             {

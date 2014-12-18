@@ -27,19 +27,12 @@ public abstract class RedisCallable<T> implements Callable<T>
 
     private T run(boolean retry)
     {
-        Jedis jedis = null;
-
-        try
+        try (Jedis jedis = plugin.getPool().getResource())
         {
-            jedis = plugin.getPool().getResource();
             return call(jedis);
-        }
-        catch (JedisConnectionException e)
+        } catch (JedisConnectionException e)
         {
             plugin.getLogger().log(Level.SEVERE, "Unable to get connection", e);
-
-            if (jedis != null)
-                plugin.getPool().returnBrokenResource(jedis);
 
             if (!retry)
             {
@@ -47,19 +40,11 @@ public abstract class RedisCallable<T> implements Callable<T>
                 try
                 {
                     Thread.sleep(100);
-                }
-                catch (InterruptedException e1)
+                } catch (InterruptedException e1)
                 {
                     throw new RuntimeException("task failed to run", e1);
                 }
                 run(true);
-            }
-        }
-        finally
-        {
-            if (jedis != null)
-            {
-                plugin.getPool().returnResource(jedis);
             }
         }
 
