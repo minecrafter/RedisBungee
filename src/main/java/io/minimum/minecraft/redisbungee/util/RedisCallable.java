@@ -4,9 +4,9 @@
  * terms of the Do What The Fuck You Want To Public License, Version 2,
  * as published by Sam Hocevar. See http://www.wtfpl.net/ for more details.
  */
-package com.imaginarycode.minecraft.redisbungee.util;
+package io.minimum.minecraft.redisbungee.util;
 
-import com.imaginarycode.minecraft.redisbungee.RedisBungee;
+import io.minimum.minecraft.redisbungee.RedisBungee;
 import lombok.AllArgsConstructor;
 import redis.clients.jedis.Jedis;
 import redis.clients.jedis.exceptions.JedisConnectionException;
@@ -15,43 +15,36 @@ import java.util.concurrent.Callable;
 import java.util.logging.Level;
 
 @AllArgsConstructor
-public abstract class RedisCallable<T> implements Callable<T>, Runnable {
+public abstract class RedisCallable<T> implements Callable<T>
+{
     private final RedisBungee plugin;
 
     @Override
-    public void run() {
-        run(false);
-    }
-
-    @Override
-    public T call() {
+    public T call()
+    {
         return run(false);
     }
 
-    private T run(boolean retry) {
-        Jedis jedis = null;
-
-        try {
-            jedis = plugin.getPool().getResource();
+    private T run(boolean retry)
+    {
+        try (Jedis jedis = plugin.getPool().getResource())
+        {
             return call(jedis);
-        } catch (JedisConnectionException e) {
+        } catch (JedisConnectionException e)
+        {
             plugin.getLogger().log(Level.SEVERE, "Unable to get connection", e);
 
-            if (jedis != null)
-                plugin.getPool().returnBrokenResource(jedis);
-
-            if (!retry) {
-                // Wait one second before retrying the task
-                try {
-                    Thread.sleep(1000);
-                } catch (InterruptedException e1) {
+            if (!retry)
+            {
+                // Wait 100ms before retrying the task
+                try
+                {
+                    Thread.sleep(100);
+                } catch (InterruptedException e1)
+                {
                     throw new RuntimeException("task failed to run", e1);
                 }
                 run(true);
-            }
-        } finally {
-            if (jedis != null) {
-                plugin.getPool().returnResource(jedis);
             }
         }
 

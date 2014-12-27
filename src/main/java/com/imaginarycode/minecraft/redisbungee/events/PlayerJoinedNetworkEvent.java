@@ -6,7 +6,8 @@
  */
 package com.imaginarycode.minecraft.redisbungee.events;
 
-import lombok.ToString;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
 import net.md_5.bungee.api.plugin.Event;
 
 import java.util.UUID;
@@ -19,16 +20,12 @@ import java.util.UUID;
  * asynchronously.
  *
  * @since 0.3.4
+ * @deprecated use {@link io.minimum.minecraft.redisbungee.events.PlayerJoinedNetworkEvent}
  */
-@ToString
-public class PlayerJoinedNetworkEvent extends Event {
+@EqualsAndHashCode(callSuper = false)
+@Data
+@Deprecated
+public class PlayerJoinedNetworkEvent extends Event
+{
     private final UUID uuid;
-
-    public PlayerJoinedNetworkEvent(UUID uuid) {
-        this.uuid = uuid;
-    }
-
-    public UUID getUuid() {
-        return uuid;
-    }
 }

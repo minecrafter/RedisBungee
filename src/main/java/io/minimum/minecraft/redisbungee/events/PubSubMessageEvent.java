@@ -4,7 +4,7 @@
  * terms of the Do What The Fuck You Want To Public License, Version 2,
  * as published by Sam Hocevar. See http://www.wtfpl.net/ for more details.
  */
-package com.imaginarycode.minecraft.redisbungee.events;
+package io.minimum.minecraft.redisbungee.events;
 
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -19,7 +19,6 @@ import net.md_5.bungee.api.plugin.Event;
  */
 @EqualsAndHashCode(callSuper = false)
 @Data
-@Deprecated
 public class PubSubMessageEvent extends Event
 {
     private final String channel;
