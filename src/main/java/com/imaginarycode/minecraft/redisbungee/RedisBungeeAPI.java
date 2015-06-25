@@ -220,6 +220,16 @@ public class RedisBungeeAPI {
     }
 
     /**
+     * Get the current BungeeCord network ID for this network.
+     *
+     * @return the current network ID
+     * @since 0.2.5
+     */
+    public final String getNetworkId() {
+        return RedisBungee.getConfiguration().getNetworkId();
+    }
+
+    /**
      * Get the current BungeeCord server ID for this server.
      *
      * @return the current server ID

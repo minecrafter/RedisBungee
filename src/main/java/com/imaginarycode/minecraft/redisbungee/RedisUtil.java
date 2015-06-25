@@ -37,16 +37,18 @@ import redis.clients.jedis.Pipeline;
 public class RedisUtil {
     // Compatibility restraints prevent me from using using HDEL with multiple keys.
     public static void cleanUpPlayer(String player, Jedis rsc) {
-        rsc.srem("proxy:" + RedisBungee.getApi().getServerId() + ":usersOnline", player);
+        rsc.srem("proxy:" + RedisBungee.getApi().getNetworkId() + ":" + RedisBungee.getApi().getServerId() + ":usersOnline", player);
         rsc.hdel("player:" + player, "server");
         rsc.hdel("player:" + player, "ip");
+        rsc.hdel("player:" + player, "network");
         rsc.hdel("player:" + player, "proxy");
     }
 
     public static void cleanUpPlayer(String player, Pipeline rsc) {
-        rsc.srem("proxy:" + RedisBungee.getApi().getServerId() + ":usersOnline", player);
+        rsc.srem("proxy:" + RedisBungee.getApi().getNetworkId() + ":" + RedisBungee.getApi().getServerId() + ":usersOnline", player);
         rsc.hdel("player:" + player, "server");
         rsc.hdel("player:" + player, "ip");
+        rsc.hdel("player:" + player, "network");
         rsc.hdel("player:" + player, "proxy");
     }
 
