@@ -113,7 +113,7 @@ public final class RedisBungee extends Plugin {
                 nagAboutServers.set(10);
             }
             ImmutableList.Builder<String> servers = ImmutableList.builder();
-            Map<String, String> heartbeats = jedis.hgetAll("heartbeats");
+            Map<String, String> heartbeats = jedis.hgetAll("heartbeats:" + configuration.getNetworkId());
             for (Map.Entry<String, String> entry : heartbeats.entrySet()) {
                 try {
                     long stamp = Long.parseLong(entry.getValue());
@@ -135,7 +135,7 @@ public final class RedisBungee extends Plugin {
     public Set<UUID> getPlayersOnProxy(String server) {
         checkArgument(getServerIds().contains(server), server + " is not a valid proxy ID");
         try (Jedis jedis = pool.getResource()) {
-            Set<String> users = jedis.smembers("proxy:" + server + ":usersOnline");
+            Set<String> users = jedis.smembers("proxy:" + configuration.getNetworkId() + ":" + server + ":usersOnline");
             ImmutableSet.Builder<UUID> builder = ImmutableSet.builder();
             for (String user : users) {
                 builder.add(UUID.fromString(user));
@@ -181,7 +181,7 @@ public final class RedisBungee extends Plugin {
         if (pool != null) {
             try (Jedis rsc = pool.getResource()) {
                 for (String i : getServerIds()) {
-                    c += rsc.scard("proxy:" + i + ":usersOnline");
+                    c += rsc.scard("proxy:" + configuration.getNetworkId() + ":" + i + ":usersOnline");
                 }
             } catch (JedisConnectionException e) {
                 // Redis server has disappeared!
@@ -206,7 +206,7 @@ public final class RedisBungee extends Plugin {
             try (Jedis rsc = pool.getResource()) {
                 List<String> keys = new ArrayList<>();
                 for (String i : getServerIds()) {
-                    keys.add("proxy:" + i + ":usersOnline");
+                    keys.add("proxy:" + configuration.getNetworkId() + ":" + i + ":usersOnline");
                 }
                 if (!keys.isEmpty()) {
                     Set<String> users = rsc.sunion(keys.toArray(new String[keys.size()]));
@@ -259,7 +259,7 @@ public final class RedisBungee extends Plugin {
         }
         if (pool != null) {
             try (Jedis tmpRsc = pool.getResource()) {
-                tmpRsc.hset("heartbeats", configuration.getServerId(), String.valueOf(System.currentTimeMillis()));
+                tmpRsc.hset("heartbeats:" + configuration.getNetworkId(), configuration.getServerId(), String.valueOf(System.currentTimeMillis()));
                 // This is more portable than INFO <section>
                 String info = tmpRsc.info();
                 for (String s : info.split("\r\n")) {
@@ -288,7 +288,7 @@ public final class RedisBungee extends Plugin {
                 @Override
                 public void run() {
                     try (Jedis rsc = pool.getResource()) {
-                        rsc.hset("heartbeats", configuration.getServerId(), String.valueOf(System.currentTimeMillis()));
+                        rsc.hset("heartbeats:" + configuration.getNetworkId(), configuration.getServerId(), String.valueOf(System.currentTimeMillis()));
                     } catch (JedisConnectionException e) {
                         // Redis server has disappeared!
                         getLogger().log(Level.SEVERE, "Unable to update heartbeat - did your Redis server go away?", e);
@@ -319,7 +319,7 @@ public final class RedisBungee extends Plugin {
                 public void run() {
                     try (Jedis tmpRsc = pool.getResource()) {
                         Set<String> players = getLocalPlayersAsUuidStrings();
-                        Set<String> redisCollection = tmpRsc.smembers("proxy:" + configuration.getServerId() + ":usersOnline");
+                        Set<String> redisCollection = tmpRsc.smembers("proxy:" + configuration.getNetworkId() + ":" + configuration.getServerId() + ":usersOnline");
 
                         for (String member : redisCollection) {
                             if (!players.contains(member)) {
@@ -327,7 +327,7 @@ public final class RedisBungee extends Plugin {
                                 boolean found = false;
                                 for (String proxyId : getServerIds()) {
                                     if (proxyId.equals(configuration.getServerId())) continue;
-                                    if (tmpRsc.sismember("proxy:" + proxyId + ":usersOnline", member)) {
+                                    if (tmpRsc.sismember("proxy:" + configuration.getNetworkId() + ":" + proxyId + ":usersOnline", member)) {
                                         // Just clean up the set.
                                         found = true;
                                         break;
@@ -337,7 +337,7 @@ public final class RedisBungee extends Plugin {
                                     RedisUtil.cleanUpPlayer(member, tmpRsc);
                                     getLogger().warning("Player found in set that was not found locally and globally: " + member);
                                 } else {
-                                    tmpRsc.srem("proxy:" + configuration.getServerId() + ":usersOnline", member);
+                                    tmpRsc.srem("proxy:" + configuration.getNetworkId() + ":" + configuration.getServerId() + ":usersOnline", member);
                                     getLogger().warning("Player found in set that was not found locally, but is on another proxy: " + member);
                                 }
                             }
@@ -349,7 +349,7 @@ public final class RedisBungee extends Plugin {
 
                             // Player not online according to Redis but not BungeeCord.
                             getLogger().warning("Player " + player + " is on the proxy but not in Redis.");
-                            tmpRsc.sadd("proxy:" + configuration.getServerId() + ":usersOnline", player);
+                            tmpRsc.sadd("proxy:" + configuration.getNetworkId() + ":" + configuration.getServerId() + ":usersOnline", player);
                         }
                     }
                 }
@@ -369,9 +369,9 @@ public final class RedisBungee extends Plugin {
             getProxy().getPluginManager().unregisterListeners(this);
 
             try (Jedis tmpRsc = pool.getResource()) {
-                tmpRsc.hdel("heartbeats", configuration.getServerId());
-                if (tmpRsc.scard("proxy:" + configuration.getServerId() + ":usersOnline") > 0) {
-                    Set<String> players = tmpRsc.smembers("proxy:" + configuration.getServerId() + ":usersOnline");
+                tmpRsc.hdel("heartbeats:" + configuration.getNetworkId(), configuration.getServerId());
+                if (tmpRsc.scard("proxy:" + configuration.getNetworkId() + ":" + configuration.getServerId() + ":usersOnline") > 0) {
+                    Set<String> players = tmpRsc.smembers("proxy:" + configuration.getNetworkId() + ":" + configuration.getServerId() + ":usersOnline");
                     for (String member : players)
                         RedisUtil.cleanUpPlayer(member, tmpRsc);
                 }

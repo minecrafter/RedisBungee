@@ -39,6 +39,8 @@ public class RedisBungeeConfiguration {
     @Getter
     private final JedisPool pool;
     @Getter
+    private final String networkId;
+    @Getter
     private final String serverId;
     @Getter
     private final boolean registerBungeeCommands;
@@ -47,6 +49,7 @@ public class RedisBungeeConfiguration {
 
     public RedisBungeeConfiguration(JedisPool pool, Configuration configuration) {
         this.pool = pool;
+        this.networkId = configuration.getString("network-id");
         this.serverId = configuration.getString("server-id");
         this.registerBungeeCommands = configuration.getBoolean("register-bungee-commands", true);
 
