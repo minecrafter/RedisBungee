@@ -366,19 +366,24 @@ class RedisBungeeCommands {
 
         @Override
         public void execute(final CommandSender sender, final String[] args) {
-            if(args.length >= 2){
+            if(args.length >= 1){
                 String name = args[0];
-                final StringBuilder stringBuilder = new StringBuilder();
-                for(int i = 1 ; i < args.length ; i++){
-                    stringBuilder.append(args[i] + " ");
+                String reason = "You are kicked out of the server.";
+                if(args.length >= 2 ) {
+                    final StringBuilder stringBuilder = new StringBuilder();
+                    for (int i = 1; i < args.length; i++) {
+                        stringBuilder.append(args[i] + " ");
+                    }
+                    reason = stringBuilder.toString();
                 }
                 final UUID uuid = plugin.getUuidTranslator().getTranslatedUuid(name, true);
+                final String finalReason = reason;
                 plugin.getProxy().getScheduler().runAsync(plugin, new RedisCallable<Void>(plugin) {
                     @Override
                     protected Void call(Jedis jedis) {
                         jedis.publish("redisbungee-data", RedisBungee.getGson().toJson(new DataManager.DataManagerMessage<>(
                                 uuid, DataManager.DataManagerMessage.Action.KICK,
-                                new DataManager.kickPayload(stringBuilder.toString()))));
+                                new DataManager.kickPayload(finalReason))));
                         return null;
                     }
                 });
