@@ -13,6 +13,7 @@ import com.imaginarycode.minecraft.redisbungee.events.PlayerLeftNetworkEvent;
 import com.imaginarycode.minecraft.redisbungee.events.PubSubMessageEvent;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import net.md_5.bungee.api.chat.TextComponent;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
 import net.md_5.bungee.api.event.PlayerDisconnectEvent;
 import net.md_5.bungee.api.event.PostLoginEvent;
@@ -208,6 +209,16 @@ public class DataManager implements Listener {
                     }
                 });
                 break;
+            case KICK:
+                final DataManagerMessage<kickPayload> kickMessage = RedisBungee.getGson().fromJson(jsonObject, new TypeToken<DataManagerMessage<kickPayload>>() {
+                }.getType());
+                ProxiedPlayer player = plugin.getProxy().getPlayer(kickMessage.getTarget());
+                if(player != null){
+                    player.disconnect(TextComponent.fromLegacyText(kickMessage.getPayload().getReason()));
+                    plugin.getLogger().severe("Global kick " + player.getName() + " out of the server");
+                }
+                invalidate(kickMessage.getTarget());
+                break;
             case SERVER_CHANGE:
                 final DataManagerMessage<ServerChangePayload> message3 = RedisBungee.getGson().fromJson(jsonObject, new TypeToken<DataManagerMessage<ServerChangePayload>>() {
                 }.getType());
@@ -233,6 +244,7 @@ public class DataManager implements Listener {
         enum Action {
             JOIN,
             LEAVE,
+            KICK,
             SERVER_CHANGE
         }
     }
@@ -241,6 +253,12 @@ public class DataManager implements Listener {
     @RequiredArgsConstructor
     static class LoginPayload {
         private final InetAddress address;
+    }
+
+    @Getter
+    @RequiredArgsConstructor
+    static class kickPayload {
+        private final String reason;
     }
 
     @Getter

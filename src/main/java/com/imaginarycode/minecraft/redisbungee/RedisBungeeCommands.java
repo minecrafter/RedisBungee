@@ -3,6 +3,7 @@ package com.imaginarycode.minecraft.redisbungee;
 import com.google.common.base.Joiner;
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Multimap;
+import com.imaginarycode.minecraft.redisbungee.util.RedisCallable;
 import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.CommandSender;
 import net.md_5.bungee.api.chat.BaseComponent;
@@ -10,6 +11,7 @@ import net.md_5.bungee.api.chat.ComponentBuilder;
 import net.md_5.bungee.api.chat.TextComponent;
 import net.md_5.bungee.api.config.ServerInfo;
 import net.md_5.bungee.api.plugin.Command;
+import redis.clients.jedis.Jedis;
 
 import java.net.InetAddress;
 import java.text.SimpleDateFormat;
@@ -351,6 +353,36 @@ class RedisBungeeCommands {
             sender.sendMessage(poolActiveStat);
             sender.sendMessage(poolIdleStat);
             sender.sendMessage(poolWaitingStat);
+        }
+    }
+
+    public static class GKickCommand extends Command {
+        private final RedisBungee plugin;
+
+        GKickCommand(RedisBungee plugin) {
+            super("gkick", "redisbungee.command.gkick");
+            this.plugin = plugin;
+        }
+
+        @Override
+        public void execute(final CommandSender sender, final String[] args) {
+            if(args.length >= 2){
+                String name = args[0];
+                final StringBuilder stringBuilder = new StringBuilder();
+                for(int i = 1 ; i < args.length ; i++){
+                    stringBuilder.append(args[i] + " ");
+                }
+                final UUID uuid = plugin.getUuidTranslator().getTranslatedUuid(name, true);
+                plugin.getProxy().getScheduler().runAsync(plugin, new RedisCallable<Void>(plugin) {
+                    @Override
+                    protected Void call(Jedis jedis) {
+                        jedis.publish("redisbungee-data", RedisBungee.getGson().toJson(new DataManager.DataManagerMessage<>(
+                                uuid, DataManager.DataManagerMessage.Action.KICK,
+                                new DataManager.kickPayload(stringBuilder.toString()))));
+                        return null;
+                    }
+                });
+            }
         }
     }
 }
