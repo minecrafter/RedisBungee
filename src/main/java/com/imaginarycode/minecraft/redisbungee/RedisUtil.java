@@ -19,7 +19,6 @@ public class RedisUtil {
         createPlayer(player.getPendingConnection(), pipeline, fireEvent);
         if (player.getServer() != null)
             pipeline.hset("player:" + player.getUniqueId().toString(), "server", player.getServer().getInfo().getName());
-        System.out.print("test");
     }
 
     protected static void createPlayer(PendingConnection connection, Pipeline pipeline, boolean fireEvent) {
