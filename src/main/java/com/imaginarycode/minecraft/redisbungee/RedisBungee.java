@@ -19,7 +19,6 @@ import lombok.NonNull;
 import net.md_5.bungee.api.ProxyServer;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
 import net.md_5.bungee.api.plugin.Plugin;
-import net.md_5.bungee.api.scheduler.ScheduledTask;
 import net.md_5.bungee.config.Configuration;
 import net.md_5.bungee.config.ConfigurationProvider;
 import net.md_5.bungee.config.YamlConfiguration;
@@ -368,7 +367,7 @@ public final class RedisBungee extends Plugin {
                 }
             }, 0, 1, TimeUnit.MINUTES);
         }
-        getProxy().registerChannel("RedisBungee");
+        getProxy().registerChannel("redisbungee:RedisBungee");
     }
 
     @Override
