@@ -367,7 +367,8 @@ public final class RedisBungee extends Plugin {
                 }
             }, 0, 1, TimeUnit.MINUTES);
         }
-        getProxy().registerChannel("redisbungee:RedisBungee");
+        getProxy().registerChannel("legacy:RedisBungee");
+        getProxy().registerChannel("RedisBungee");
     }
 
     @Override
