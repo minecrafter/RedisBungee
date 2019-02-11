@@ -150,6 +150,7 @@ public class RedisBungeeListener implements Listener {
     public void onPluginMessage(final PluginMessageEvent event) {
         if ((event.getTag().equals("legacy:RedisBungee") || event.getTag().equals("RedisBungee")) 
                 && event.getSender() instanceof Server) {
+            final String currentChannel = event.getTag();
             final byte[] data = Arrays.copyOf(event.getData(), event.getData().length);
             plugin.getProxy().getScheduler().runAsync(plugin, new Runnable() {
                 @Override
@@ -244,10 +245,8 @@ public class RedisBungeeListener implements Listener {
                         default:
                             return;
                     }
-
-                    final Server servSender = (Server) event.getSender();
-                    servSender.sendData("legacy:RedisBungee", out.toByteArray());
-                    servSender.sendData("RedisBungee", out.toByteArray());
+                    
+                    ((Server) event.getSender()).sendData(currentChannel, out.toByteArray());
                 }
             });
         }
