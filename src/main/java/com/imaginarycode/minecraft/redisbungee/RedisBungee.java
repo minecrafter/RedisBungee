@@ -528,23 +528,22 @@ public final class RedisBungee extends Plugin {
                     broken = true;
                 }
             }catch (JedisConnectionException e) {
-            	getLogger().log(Level.INFO, "PubSub error, attempting to recover in 5 secs.");
-            	getProxy().getScheduler().schedule(RedisBungee.this, PubSubListener.this, 5, TimeUnit.SECONDS);
-            	
-			}
+                getLogger().log(Level.INFO, "PubSub error, attempting to recover in 5 secs.");
+                getProxy().getScheduler().schedule(RedisBungee.this, PubSubListener.this, 5, TimeUnit.SECONDS);
+            }
 
             if (broken) {
-                run();                
+                run();
             }
         }
 
         public void addChannel(String... channel) {
-        	addedChannels.addAll(Arrays.asList(channel));
+            addedChannels.addAll(Arrays.asList(channel));
             jpsh.subscribe(channel);            
         }
 
         public void removeChannel(String... channel) {
-        	addedChannels.removeAll(Arrays.asList(channel));
+            addedChannels.removeAll(Arrays.asList(channel));
             jpsh.unsubscribe(channel);
         }
 
