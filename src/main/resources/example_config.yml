@@ -15,6 +15,10 @@ max-redis-connections: 8
 # An identifier for this BungeeCord instance.
 server-id: test1
 
+# Weather or not to ignore the "server-id". Useful for automatically deploying servers when you don't care about the server-id.
+# When set to "true", the server-id above will be ignored.
+random-id: false
+
 # Whether or not RedisBungee should install its version of regular BungeeCord commands.
 # Often, the RedisBungee commands are desired, but in some cases someone may wish to
 # override the commands using another plugin.
