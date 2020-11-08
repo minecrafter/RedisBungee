@@ -8,6 +8,7 @@ import redis.clients.jedis.JedisPool;
 
 import java.net.InetAddress;
 import java.util.List;
+import java.util.Random;
 
 public class RedisBungeeConfiguration {
     @Getter
@@ -18,10 +19,32 @@ public class RedisBungeeConfiguration {
     private final boolean registerBungeeCommands;
     @Getter
     private final List<InetAddress> exemptAddresses;
+    private final boolean randomId;
 
+    protected String getRandomString() {
+        String RANDOMSTRING = "ABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890";
+        StringBuilder rand = new StringBuilder();
+        Random rnd = new Random();
+        while (rand.length() < 18) {
+            int index = (int) (rnd.nextFloat() * RANDOMSTRING.length());
+            rand.append(RANDOMSTRING.charAt(index));
+        }
+        String randStr = rand.toString();
+        return randStr;
+
+    }
     public RedisBungeeConfiguration(JedisPool pool, Configuration configuration) {
+
         this.pool = pool;
-        this.serverId = configuration.getString("server-id");
+        if (this.randomId = configuration.getBoolean("random-id")) {
+
+            this.serverId = getRandomString();
+
+        } else {
+
+            this.serverId = configuration.getString("server-id");
+        }
+
         this.registerBungeeCommands = configuration.getBoolean("register-bungee-commands", true);
 
         List<String> stringified = configuration.getStringList("exempt-ip-addresses");
